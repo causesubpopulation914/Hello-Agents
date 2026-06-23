@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello-Agents — Building AI Agent Systems from Scratch</title>
+  <meta name="description" content="A comprehensive, free, open-source curriculum for building AI agent systems from scratch. From foundational theory to production-grade multi-agent applications." />
+  <meta name="keywords" content="AI agents, LLM, RAG, tutorial, multi-agent, OpenAI, LangChain, MCP" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Hello-Agents — Building AI Agent Systems from Scratch" />
+  <meta property="og:description" content="Free, open-source tutorial: from zero to production-grade multi-agent systems." />
+  <meta property="og:url" content="http://helloagents.org/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #0f1629;
+      --bg3: #151d35;
+      --card: #111827;
+      --border: #1e2d4d;
+      --accent: #3b82f6;
+      --accent2: #6366f1;
+      --accent3: #8b5cf6;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --dim: #475569;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(10,14,26,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #fff !important;
+      padding: .4rem .9rem;
+      border-radius: 6px;
+      transition: background .2s !important;
+    }
+
+    .nav-cta:hover { background: #2563eb !important; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(59,130,246,.1);
+      border: 1px solid rgba(59,130,246,.3);
+      border-radius: 999px;
+      padding: .35rem 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before { content: '●'; font-size: .6rem; animation: pulse 2s infinite; }
+
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
+
+    h1 {
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #60a5fa, #818cf8, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 4rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--accent);
+      color: #fff;
+      padding: .8rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .95rem;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: .8rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .95rem;
+      text-decoration: none;
+      transition: border-color .2s, background .2s, transform .15s;
+    }
+
+    .btn-secondary:hover { border-color: var(--accent); background: rgba(59,130,246,.07); transform: translateY(-1px); }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .25rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label { font-size: .8rem; color: var(--muted); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
+
+    /* ── Code block ── */
+    .code-preview {
+      position: relative;
+      max-width: 700px;
+      width: 100%;
+      margin: 4rem auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; }
+    .dot-y { background: #f59e0b; }
+    .dot-g { background: #22c55e; }
+
+    .code-filename { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--dim); }
+
+    .code-body { padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 1.8; overflow-x: auto; }
+
+    .kw { color: #818cf8; }
+    .fn { color: #60a5fa; }
+    .str { color: #34d399; }
+    .cm { color: var(--dim); font-style: italic; }
+    .var { color: #f472b6; }
+
+    /* ── Section ── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+
+    h2 {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 560px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── Feature grid ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .feature-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+    .feature-icon {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
+    .feature-desc { font-size: .9rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Curriculum ── */
+    .curriculum {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .part {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .part-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .part-num {
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: .2rem .6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      white-space: nowrap;
+    }
+
+    .part-title { font-weight: 700; font-size: 1rem; }
+    .part-chapters { font-size: .8rem; color: var(--dim); margin-left: auto; white-space: nowrap; }
+
+    .chapter-list {
+      padding: 1rem 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: .5rem;
+    }
+
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .5rem .75rem;
+      border-radius: 8px;
+      font-size: .875rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+
+    .chapter-item:hover { background: rgba(59,130,246,.08); color: var(--text); }
+
+    .ch-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--dim);
+      min-width: 2ch;
+    }
+
+    .ch-status { margin-left: auto; font-size: .75rem; color: var(--green); }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center;
+      padding: 6rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(99,102,241,.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 { margin-bottom: 1rem; }
+    .cta-section p { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--dim);
+      font-size: .85rem;
+    }
+
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-brand" href="#">Hello-Agents</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#curriculum">Curriculum</a></li>
+    <li><a href="https://github.com/Reyzowter/Hello-Agents" target="_blank">GitHub</a></li>
+    <li><a href="https://github.com/Reyzowter/Hello-Agents" class="nav-cta" target="_blank">Get Started →</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">Open Source · Free Forever</div>
+
+  <h1>
+    Build AI Agents<br />
+    <span class="gradient-text">from Scratch</span>
+  </h1>
+
+  <p class="hero-sub">
+    A complete, free curriculum to go from zero to production-grade
+    multi-agent systems — combining deep theory with hands-on code.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="https://github.com/Reyzowter/Hello-Agents" class="btn-primary" target="_blank">
+      ⭐ Star on GitHub
+    </a>
+    <a href="#curriculum" class="btn-secondary">
+      📚 Browse Curriculum
+    </a>
+    <a href="https://github.com/Reyzowter/Hello-Agents/releases/latest" class="btn-secondary" target="_blank">
+      📄 Download PDF
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">16</div>
+      <div class="stat-label">Chapters</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">7+</div>
+      <div class="stat-label">Code Examples</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">13+</div>
+      <div class="stat-label">Extra Chapters</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">Free & Open Source</div>
+    </div>
+  </div>
+</div>
+
+<!-- Code preview -->
+<div style="position:relative;z-index:1;padding:0 2rem;">
+  <div class="code-preview">
+    <div class="code-header">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="code-filename">code/chapter4/react_agent.py</span>
+    </div>
+    <div class="code-body">
+<span class="cm"># ReAct: Reason + Act — Chapter 4</span>
+<br /><span class="kw">def</span> <span class="fn">run_react_agent</span>(<span class="var">question</span>: <span class="fn">str</span>) -&gt; <span class="fn">str</span>:
+<br />    <span class="var">messages</span> = [<span class="fn">system_prompt</span>(), <span class="fn">user</span>(<span class="var">question</span>)]
+<br />
+<br />    <span class="kw">for</span> <span class="var">step</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="var">max_steps</span>):
+<br />        <span class="var">response</span> = <span class="var">client</span>.<span class="fn">chat.completions.create</span>(
+<br />            <span class="var">model</span>=<span class="str">"gpt-4o-mini"</span>,
+<br />            <span class="var">messages</span>=<span class="var">messages</span>,
+<br />            <span class="var">tools</span>=<span class="var">TOOL_DESCRIPTIONS</span>,
+<br />        )
+<br />        <span class="kw">if not</span> <span class="var">response</span>.<span class="fn">tool_calls</span>:
+<br />            <span class="kw">return</span> <span class="var">response</span>.<span class="var">content</span>  <span class="cm"># ✅ final answer</span>
+<br />
+<br />        <span class="cm"># Execute tools → append observations → loop</span>
+<br />        <span class="fn">execute_tools</span>(<span class="var">response</span>.<span class="var">tool_calls</span>, <span class="var">messages</span>)
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- Features -->
+<section id="features">
+  <div class="section-label">Why Hello-Agents</div>
+  <h2>Everything you need to<br /><span class="gradient-text">master agent development</span></h2>
+  <p class="section-sub">Not a collection of API tutorials. A real curriculum built on first principles.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔬</div>
+      <div class="feature-title">First-Principles Approach</div>
+      <div class="feature-desc">Understand <em>why</em> agents work — from Transformer attention to ReAct loops — before touching any framework.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏗️</div>
+      <div class="feature-title">Build Your Own Framework</div>
+      <div class="feature-desc">Chapter 7 walks you through implementing a complete agent framework from zero using the OpenAI native API.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-title">Protocol-Level Coverage</div>
+      <div class="feature-desc">Deep dives into MCP, A2A, and ANP — the communication standards that power production multi-agent systems.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💻</div>
+      <div class="feature-title">100% Runnable Code</div>
+      <div class="feature-desc">Every chapter comes with tested, annotated Python examples. Clone, install, run — it just works.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-title">Interview-Ready</div>
+      <div class="feature-desc">Curated agent interview questions and answers from top AI companies. Extra Chapter 01 has you covered.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤝</div>
+      <div class="feature-title">Community-Driven</div>
+      <div class="feature-desc">13+ extra chapters contributed by the community. Open PRs welcome. Growing every week.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- Curriculum -->
+<section id="curriculum">
+  <div class="section-label">Curriculum</div>
+  <h2>16 chapters, <span class="gradient-text">zero hand-waving</span></h2>
+  <p class="section-sub">Five parts, each a solid step toward the next. Follow in order or jump to what you need.</p>
+
+  <div class="curriculum">
+    <div class="part">
+      <div class="part-header">
+        <span class="part-num">Part 1</span>
+        <span class="part-title">Agent & Language Model Fundamentals</span>
+        <span class="part-chapters">Chapters 1–3</span>
+      </div>
+      <div class="chapter-list">
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter1/Chapter1-Introduction-to-Agents.md" target="_blank">
+          <span class="ch-num">01</span> Introduction to Agents <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter2/Chapter2-History-of-Agents.md" target="_blank">
+          <span class="ch-num">02</span> History of Agents <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter3/Chapter3-Fundamentals-of-Large-Language-Models.md" target="_blank">
+          <span class="ch-num">03</span> LLM Fundamentals <span class="ch-status">✓</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="part">
+      <div class="part-header">
+        <span class="part-num">Part 2</span>
+        <span class="part-title">Building Your First LLM Agent</span>
+        <span class="part-chapters">Chapters 4–7</span>
+      </div>
+      <div class="chapter-list">
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter4/Chapter4-Building-Classic-Agent-Paradigms.md" target="_blank">
+          <span class="ch-num">04</span> Classic Agent Paradigms <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter5/Chapter5-Building-Agents-with-Low-Code-Platforms.md" target="_blank">
+          <span class="ch-num">05</span> Low-Code Platforms <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter6/Chapter6-Framework-Development-Practice.md" target="_blank">
+          <span class="ch-num">06</span> Framework Development <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter7/Chapter7-Building-Your-Agent-Framework.md" target="_blank">
+          <span class="ch-num">07</span> Build Your Own Framework <span class="ch-status">✓</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="part">
+      <div class="part-header">
+        <span class="part-num">Part 3</span>
+        <span class="part-title">Advanced Techniques</span>
+        <span class="part-chapters">Chapters 8–12</span>
+      </div>
+      <div class="chapter-list">
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter8/Chapter8-Memory-and-Retrieval.md" target="_blank">
+          <span class="ch-num">08</span> Memory & Retrieval (RAG) <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter9/Chapter9-Context-Engineering.md" target="_blank">
+          <span class="ch-num">09</span> Context Engineering <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter10/Chapter10-Agent-Communication-Protocols.md" target="_blank">
+          <span class="ch-num">10</span> Communication Protocols <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter11/Chapter11-Agentic-RL.md" target="_blank">
+          <span class="ch-num">11</span> Agentic-RL <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter12/Chapter12-Agent-Performance-Evaluation.md" target="_blank">
+          <span class="ch-num">12</span> Agent Evaluation <span class="ch-status">✓</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="part">
+      <div class="part-header">
+        <span class="part-num">Part 4</span>
+        <span class="part-title">Real-World Case Studies</span>
+        <span class="part-chapters">Chapters 13–15</span>
+      </div>
+      <div class="chapter-list">
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter13/Chapter13-Intelligent-Travel-Assistant.md" target="_blank">
+          <span class="ch-num">13</span> Intelligent Travel Assistant <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter14/Chapter14-Automated-Deep-Research-Agent.md" target="_blank">
+          <span class="ch-num">14</span> Deep Research Agent <span class="ch-status">✓</span>
+        </a>
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter15/Chapter15-Building-Cyber-Town.md" target="_blank">
+          <span class="ch-num">15</span> Cyber Town Simulation <span class="ch-status">✓</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="part">
+      <div class="part-header">
+        <span class="part-num">Part 5</span>
+        <span class="part-title">Capstone Project</span>
+        <span class="part-chapters">Chapter 16</span>
+      </div>
+      <div class="chapter-list">
+        <a class="chapter-item" href="https://github.com/Reyzowter/Hello-Agents/blob/main/docs/chapter16/Chapter16-Graduation-Project.md" target="_blank">
+          <span class="ch-num">16</span> Build Your Multi-Agent App <span class="ch-status">✓</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-glow"></div>
+  <p class="section-label" style="justify-content:center;display:flex;">Get Started Today</p>
+  <h2>Ready to build<br /><span class="gradient-text">your first agent?</span></h2>
+  <p>Everything is free, open-source, and waiting for you on GitHub.</p>
+  <div class="hero-buttons">
+    <a href="https://github.com/Reyzowter/Hello-Agents" class="btn-primary" target="_blank">⭐ View on GitHub</a>
+    <a href="https://github.com/Reyzowter/Hello-Agents/releases/latest" class="btn-secondary" target="_blank">📄 Download PDF</a>
+    <a href="https://github.com/Reyzowter/Hello-Agents/issues/new?template=bug_report.md" class="btn-secondary" target="_blank">🤝 Contribute</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="http://helloagents.org/">Hello-Agents</a> ·
+    <a href="https://github.com/Reyzowter/Hello-Agents" target="_blank">GitHub</a> ·
+    <a href="https://github.com/Reyzowter/Hello-Agents/blob/main/CONTRIBUTING.md" target="_blank">Contribute</a> ·
+    Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>
+  </p>
+  <p style="margin-top:.5rem">Made with ❤️ by the Hello-Agents community</p>
+</footer>
+
+</body>
+</html>
